@@ -6,11 +6,10 @@ import {
   Popup,
   Polyline,
 } from "react-leaflet";
-import "leaflet/dist/leaflet.css";  
+import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { CircleMarker } from "react-leaflet";
 import React from "react";
-
 
 // fix icon (marker)
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -106,7 +105,7 @@ export default function MapComponent() {
     // Fetch bus stops inside bounding box
     const fetchBusStops = async () => {
       const query = `
-        [out:json][timeout:25];
+        [out:json][timeout:50];
         node
           ["highway"="bus_stop"]
           ["network"="SCMC"]; 
@@ -131,8 +130,8 @@ export default function MapComponent() {
       };
 
       const stops: BusStop[] = data.elements
-        .filter((el): el is OsmNode => el.type === "node")
-        .map((node) => ({
+        .filter((el: any): el is OsmNode => el.type === "node")
+        .map((node: OsmNode) => ({
           id: node.id,
           position: [node.lat, node.lon],
           name: node.tags?.name,
@@ -153,7 +152,7 @@ export default function MapComponent() {
   }, []);
 
   return (
-    <div style={{ width: "1000px", height: "600px" }}>
+    <div style={{ width: "1000px", height: "1000px" }}>
       <MapContainer
         center={[18.79885, 98.95064]}
         zoom={15}
@@ -173,33 +172,31 @@ export default function MapComponent() {
           />
         ))}
 
-{busStops.map((stop) => (
-  <React.Fragment key={stop.id}>
-    {/* วงกลมใหญ่ สีทองเหลือง ขอบ */}
-    <CircleMarker
-      center={stop.position}
-      radius={4}           // ใหญ่กว่า
-      color="#eeb34b"      // สีขอบทองเหลือง
-      fillColor="#eeb34b"  // เติมเต็มสีทองเหลือง
-      fillOpacity={1}
-      stroke={true}
-      weight={3}           // ความหนาขอบ
-    />
-    {/* วงกลมเล็ก สีขาว ตรงกลาง */}
-    <CircleMarker
-      center={stop.position}
-      radius={2.5}           // เล็กกว่า
-      color="#ffffff"      // สีขอบขาว (หรือโปร่งใส)
-      fillColor="#ffffff"  // เติมเต็มสีขาว
-      fillOpacity={1}
-      stroke={false}       // ไม่มีขอบซ้อนอีกที
-    >
-      <Popup>{stop.name ?? "ป้ายรถเมล์"}</Popup>
-    </CircleMarker>
-  </React.Fragment>
-))}
-
-
+        {busStops.map((stop) => (
+          <React.Fragment key={stop.id}>
+            {/* วงกลมใหญ่ สีทองเหลือง ขอบ */}
+            <CircleMarker
+              center={stop.position}
+              radius={4} // ใหญ่กว่า
+              color="#eeb34b" // สีขอบทองเหลือง
+              fillColor="#eeb34b" // เติมเต็มสีทองเหลือง
+              fillOpacity={1}
+              stroke={true}
+              weight={3} // ความหนาขอบ
+            />
+            {/* วงกลมเล็ก สีขาว ตรงกลาง */}
+            <CircleMarker
+              center={stop.position}
+              radius={2.5} // เล็กกว่า
+              color="#ffffff" // สีขอบขาว (หรือโปร่งใส)
+              fillColor="#ffffff" // เติมเต็มสีขาว
+              fillOpacity={1}
+              stroke={false} // ไม่มีขอบซ้อนอีกที
+            >
+              <Popup>{stop.name ?? "ป้ายรถเมล์"}</Popup>
+            </CircleMarker>
+          </React.Fragment>
+        ))}
       </MapContainer>
     </div>
   );
